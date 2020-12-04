@@ -310,8 +310,31 @@ class EMAPProtocol(Protocol):
     super(EMAPProtocol, self).run()
 
     self.reader.start()
-    self.tag.start()
+    self.info('End')
 
   def verify(self):
-    # TODO: Verify
-    pass
+    if self.reader.ID != self.tag.ID:
+      self.error('ID verification mismatch')
+
+    if self.reader.IDS != self.tag.IDS:
+      self.error('IDS verification mismatch')
+
+    if self.reader.K1 != self.tag.K1:
+      self.error('K1 verification mismatch')
+
+    if self.reader.K2 != self.tag.K2:
+      self.error('K2 verification mismatch')
+
+    if self.reader.K3 != self.tag.K3:
+      self.error('K3 verification mismatch')
+
+    if self.reader.K4 != self.tag.K4:
+      self.error('K4 verification mismatch')
+
+    if self.reader.n1 != self.tag.n1:
+      self.error('n1 verification mismatch')
+
+    if self.reader.n2 != self.tag.n2:
+      self.error('n2 verification mismatch')
+
+    self.info('Verification successful')
