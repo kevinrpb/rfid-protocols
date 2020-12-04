@@ -10,31 +10,39 @@ MESSAGE_SIZE = 96
 # --------------------
 # Functions
 # --------------------
-def parity(b: bitarray):
-  # TODO: Calc parity
-  return bitarray(16)
+def parity(b: bitarray, n: int = 4) -> bitarray:
+  # Divide in chunks of 4 bits
+  chunks = [b[i:i + n] for i in range(0, len(b), n)]
+
+  # Calc parity for each chunk
+  parities = [c.count(True) % 2 == 0 for c in chunks]
+
+  # Return bitarray
+  return bitarray(parities)
 
 def update(ID: bitarray, IDS: bitarray, K1: bitarray, K2: bitarray, K3: bitarray, K4: bitarray, n1: bitarray, n2: bitarray):
   IDS_ = IDS ^ n2 ^ K1
 
-  K1_delta = ID[:MESSAGE_SIZE/2]
+  idx = int(MESSAGE_SIZE/2)
+
+  K1_delta = ID[:idx]
   K1_delta.extend(parity(K4))
   K1_delta.extend(parity(K3))
   K1_ = K1 ^ n2 ^ K1_delta
 
   K2_delta = parity(K1)
   K2_delta.extend(parity(K4))
-  K2_delta.extend(ID[MESSAGE_SIZE/2:])
+  K2_delta.extend(ID[idx:])
   K2_ = K2 ^ n2 ^ K2_delta
 
-  K3_delta = ID[:MESSAGE_SIZE/2]
+  K3_delta = ID[:idx]
   K3_delta.extend(parity(K4))
   K3_delta.extend(parity(K2))
   K3_ = K3 ^ n1 ^ K3_delta
 
   K4_delta = parity(K3)
   K4_delta.extend(parity(K1))
-  K4_delta.extend(ID[MESSAGE_SIZE/2:])
+  K4_delta.extend(ID[idx:])
   K4_ = K4 ^ n1 ^ K4_delta
 
   return (IDS, K1, K2, K3, K4)
@@ -199,7 +207,7 @@ class EMAPTag(Tag):
     self.K2 = K2_
     self.K3 = K3_
     self.K4 = K4_
-    
+
     self.info('Updated keys and IDS')
 
   def handle_hello_message(self):
@@ -263,7 +271,7 @@ class EMAPTag(Tag):
     self.info('Sent DE message')
 
     # Update keys in b4
-    self.update_keys()
+    self.update()
 
     self.channel.send(de_message)
 
