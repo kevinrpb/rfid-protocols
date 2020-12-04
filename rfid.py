@@ -4,7 +4,7 @@ from protocols.emap import EMAPProtocol
 
 def main():
   protocol = EMAPProtocol()
-  protocol.start()
+  protocol.run()
 
 if __name__ == '__main__':
   main()

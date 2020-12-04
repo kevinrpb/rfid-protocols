@@ -1,5 +1,8 @@
 from enum import Enum
 
+from bitarray import bitarray
+
+
 class MessageKind(Enum):
   READER_TO_TAG = 0
   TAG_TO_READER = 1
@@ -13,10 +16,10 @@ class MessageKind(Enum):
       return ''
 
 class Message(object):
-  def __init__(self, label: str, kind: MessageKind, content: bytearray):
+  def __init__(self, label: str, kind: MessageKind, content: bitarray):
     self.label = label
     self.kind = kind
     self.content = content
 
   def size(self) -> int:
-    return len(self.content * 8)
+    return self.content.length()

@@ -1,15 +1,19 @@
+from util.logger import Logger
+
 from base.channel import Channel
 from base.listener import Listener
 from base.message import Message, MessageKind
 
 
-class Tag(Listener):
+class Tag(Listener, Logger):
 
   def __init__(self, id: str, channel: Channel):
+    Logger.__init__(self, 'Tag', id)
+
     self.id = id
     self.channel = channel
 
-    self.log('Created')
+    self.info('Created')
 
   def start(self):
     pass
@@ -18,7 +22,4 @@ class Tag(Listener):
     if message.kind != MessageKind.READER_TO_TAG:
       return
 
-    self.log('Received message with label "{}"'.format(message.label))
-
-  def log(self, message: str):
-    print('[Tag.{}] {}'.format(self.id, message))
+    self.info(f'Received message with label "{message.label}"')

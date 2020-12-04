@@ -1,15 +1,20 @@
+from util.logger import Logger
+
 from base.channel import Channel
 
-class Protocol(object):
+
+class Protocol(Logger):
 
   def __init__(self, id: str):
+    Logger.__init__(self, 'Protocol', id)
+
     self.id = id
     self.channel = Channel(id)
 
-    self.log('Created')
+    self.info('Created')
 
-  def start(self):
-    self.log('Started')
+  def run(self):
+    self.info('Started')
 
-  def log(self, message: str):
-    print('[Protocol.{}] {}'.format(self.id, message))
+  def verify(self):
+    pass

@@ -1,25 +1,26 @@
+from util.logger import Logger
+
 from base.listener import Listener
 from base.message import Message
 
 
-class Channel(object):
+class Channel(Logger):
   def __init__(self, id: str):
+    Logger.__init__(self, 'Channel', id)
+
     self.id = id
     self.listeners = []
 
-    self.log('Created')
+    self.info('Created')
 
   def listen(self, listener: Listener):
     self.listeners.append(listener)
 
   def send(self, message: Message):
-    self.log(
-      'Message (kind: {}, label: {}, size: {} bits)'.format(message.kind, message.label, message.size())
+    self.info(
+      f'Message (kind: {message.kind}, label: {message.label}, size: {message.size()} bits)'
     )
 
     for listener in self.listeners:
       if isinstance(listener, Listener):
         listener.receive(message)
-
-  def log(self, message: str):
-    print('[Channel.{}] {}'.format(self.id, message))
