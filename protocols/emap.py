@@ -8,6 +8,38 @@ from bitarray import bitarray
 MESSAGE_SIZE = 96
 
 # --------------------
+# Functions
+# --------------------
+def parity(b: bitarray):
+  # TODO: Calc parity
+  return bitarray(16)
+
+def update(ID: bitarray, IDS: bitarray, K1: bitarray, K2: bitarray, K3: bitarray, K4: bitarray, n1: bitarray, n2: bitarray):
+  IDS_ = IDS ^ n2 ^ K1
+
+  K1_delta = ID[:MESSAGE_SIZE/2]
+  K1_delta.extend(parity(K4))
+  K1_delta.extend(parity(K3))
+  K1_ = K1 ^ n2 ^ K1_delta
+
+  K2_delta = parity(K1)
+  K2_delta.extend(parity(K4))
+  K2_delta.extend(ID[MESSAGE_SIZE/2:])
+  K2_ = K2 ^ n2 ^ K2_delta
+
+  K3_delta = ID[:MESSAGE_SIZE/2]
+  K3_delta.extend(parity(K4))
+  K3_delta.extend(parity(K2))
+  K3_ = K3 ^ n1 ^ K3_delta
+
+  K4_delta = parity(K3)
+  K4_delta.extend(parity(K1))
+  K4_delta.extend(ID[MESSAGE_SIZE/2:])
+  K4_ = K4 ^ n1 ^ K4_delta
+
+  return (IDS, K1, K2, K3, K4)
+
+# --------------------
 # EMAPReader
 # --------------------
 class EMAPReader(Reader):
@@ -44,11 +76,17 @@ class EMAPReader(Reader):
 
     self.channel.send(hello_message)
 
-  def update_keys(self):
-    """Updates the keys of the tag. This should happen once authentication is over.
+  def update(self):
+    """Updates the keys and IDS of the tag. This should happen once authentication is over.
     """
-    # TODO: Update keys
-    self.info('Updated keys')
+    IDS_, K1_, K2_, K3_, K4_ = update(self.ID, self.IDS, self.K1, self.K2, self.K3, self.K4, self.n1, self.n2)
+
+    self.IDS = IDS_
+    self.K1 = K1_
+    self.K2 = K2_
+    self.K3 = K3_
+    self.K4 = K4_
+    self.info('Updated keys and IDS')
 
   def handle_IDS_message(self, message: Message):
     """Handles message containing IDS from the tag.
@@ -120,7 +158,7 @@ class EMAPReader(Reader):
     self.info('Got ID')
 
     # Update keys
-    self.update_keys()
+    self.update()
 
   def receive(self, message: Message):
     super(EMAPReader, self).receive(message)
@@ -151,11 +189,18 @@ class EMAPTag(Tag):
     self.n1  = None
     self.n2  = None
 
-  def update_keys(self):
-    """Updates the keys of the tag. This should happen once authentication is over.
+  def update(self):
+    """Updates the keys and IDS of the tag. This should happen once authentication is over.
     """
-    # TODO: Update keys
-    self.info('Updated keys')
+    IDS_, K1_, K2_, K3_, K4_ = update(self.ID, self.IDS, self.K1, self.K2, self.K3, self.K4, self.n1, self.n2)
+
+    self.IDS = IDS_
+    self.K1 = K1_
+    self.K2 = K2_
+    self.K3 = K3_
+    self.K4 = K4_
+    
+    self.info('Updated keys and IDS')
 
   def handle_hello_message(self):
     """Handles initial hello message from the reader.
@@ -194,11 +239,13 @@ class EMAPTag(Tag):
     if n1 != n1_:
       self.error('Error in n1 verification')
     else:
+      self.n1 = n1
+      self.n2 = n2
       self.info('Got n1, n2. Reader verified')
 
     # Create D, E
-    D = (self.IDS & self.K4) ^ n2
-    E = (self.IDS & n1 | n2) ^ self.ID ^ self.K1 ^ self.K2 ^ self.K3 ^ self.K4
+    D = (self.IDS & self.K4) ^ self.n2
+    E = (self.IDS & self.n1 | self.n2) ^ self.ID ^ self.K1 ^ self.K2 ^ self.K3 ^ self.K4
 
     self.info('Created D, E')
 
