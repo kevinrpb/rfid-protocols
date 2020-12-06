@@ -1,4 +1,4 @@
-from util.logger import Logger
+from util.logger import Logger, LogLevel
 
 from base.listener import Listener
 from base.message import Message
@@ -6,18 +6,18 @@ from base.message import Message
 
 class Channel(Logger):
   def __init__(self, id: str):
-    Logger.__init__(self, 'Channel', id)
+    Logger.__init__(self, LogLevel.CHANNEL, 'Channel', id)
 
     self.id = id
     self.listeners = []
 
-    self.info('Created')
+    self.log('Created')
 
   def listen(self, listener: Listener):
     self.listeners.append(listener)
 
   def send(self, message: Message):
-    self.info(
+    self.log(
       f'Message (kind: {message.kind}, label: {message.label}, size: {message.size()} bits)'
     )
 

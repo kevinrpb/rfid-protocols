@@ -5,11 +5,11 @@ from util.logger import Logger, LogLevel
 from util.parse import AttackKind, ProtocolKind, parse_args
 
 _PROTOCOLS = {
-  ProtocolKind.emap: EMAPProtocol
+  ProtocolKind.EMAP: EMAPProtocol
 }
 
 _ATTACKS = {
-  AttackKind.linear: LinearAttack
+  AttackKind.LINEAR: LinearAttack
 }
 
 def main():
@@ -17,7 +17,7 @@ def main():
   print(args) # TODO: Remove
 
   # Set logging level
-  Logger.level = LogLevel[args.loglevel]
+  Logger._level = LogLevel[args.loglevel]
 
   # Create protocol
   protocol = _PROTOCOLS[ProtocolKind[args.protocol]]()
@@ -32,6 +32,7 @@ def main():
     attack.run()
   else:
     protocol.run()
+    protocol.verify()
 
 if __name__ == '__main__':
   main()

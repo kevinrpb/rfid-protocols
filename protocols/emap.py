@@ -82,6 +82,7 @@ class EMAPReader(Reader):
       content = bitarray(0)
     )
 
+    self.log('Sent hello message')
     self.channel.send(hello_message)
 
   def update(self):
@@ -94,7 +95,7 @@ class EMAPReader(Reader):
     self.K2 = K2_
     self.K3 = K3_
     self.K4 = K4_
-    self.info('Updated keys and IDS')
+    self.log('Updated keys and IDS')
 
   def handle_IDS_message(self, message: Message):
     """Handles message containing IDS from the tag.
@@ -107,19 +108,19 @@ class EMAPReader(Reader):
     if self.IDS is None or len(self.IDS) != MESSAGE_SIZE:
       self.error('Missing IDS or incorrect size')
 
-    self.info('IDS Valid')
+    self.log('IDS Valid')
 
     # First, create n1 & n2
     self.n1 = bitarray(MESSAGE_SIZE)
     self.n2 = bitarray(MESSAGE_SIZE)
 
-    self.info('Created n1, n2')
+    self.log('Created n1, n2')
 
     # Then, create A, B, C
     A =  self.IDS ^ self.K1  ^ self.n1
     B = (self.IDS | self.K2) ^ self.n1
     C =  self.IDS ^ self.K3  ^ self.n2
-    self.info('Created A, B, C')
+    self.log('Created A, B, C')
 
     # Create and send message
     content = bitarray(0)
@@ -133,7 +134,7 @@ class EMAPReader(Reader):
       content = content
     )
 
-    self.info('Sent ABC message')
+    self.log('Sent ABC message')
     self.channel.send(abc_message)
 
   def handle_ED_message(self, message: Message):
@@ -150,7 +151,7 @@ class EMAPReader(Reader):
     D = DE[:MESSAGE_SIZE]
     E = DE[MESSAGE_SIZE:]
 
-    self.info('Got D, E')
+    self.log('Got D, E')
 
     # Verify n2
     n2_ = (self.IDS & self.K4) ^ D
@@ -158,12 +159,12 @@ class EMAPReader(Reader):
     if n2_ != self.n2:
       self.error('Incorrect n2 received')
     else:
-      self.info('Tag verified')
+      self.log('Tag verified')
 
     # Extract ID
     self.ID = (self.IDS & self.n1 | self.n2) ^ E ^ self.K1 ^ self.K2 ^ self.K3 ^ self.K4
 
-    self.info('Got ID')
+    self.log('Got ID')
 
     # Update keys
     self.update()
@@ -208,7 +209,7 @@ class EMAPTag(Tag):
     self.K3 = K3_
     self.K4 = K4_
 
-    self.info('Updated keys and IDS')
+    self.log('Updated keys and IDS')
 
   def handle_hello_message(self):
     """Handles initial hello message from the reader.
@@ -219,7 +220,7 @@ class EMAPTag(Tag):
       content = self.IDS
     )
 
-    self.info('Sent "IDS" message')
+    self.log('Sent "IDS" message')
     self.channel.send(IDS_message)
 
   def handle_ABC_message(self, message: Message):
@@ -237,7 +238,7 @@ class EMAPTag(Tag):
     B = ABC[MESSAGE_SIZE:2*MESSAGE_SIZE]
     C = ABC[2*MESSAGE_SIZE:]
 
-    self.info('Got A, B, C')
+    self.log('Got A, B, C')
 
     # Get n1, n2
     n1  =  self.IDS ^ self.K1  ^ A
@@ -249,13 +250,13 @@ class EMAPTag(Tag):
     else:
       self.n1 = n1
       self.n2 = n2
-      self.info('Got n1, n2. Reader verified')
+      self.log('Got n1, n2. Reader verified')
 
     # Create D, E
     D = (self.IDS & self.K4) ^ self.n2
     E = (self.IDS & self.n1 | self.n2) ^ self.ID ^ self.K1 ^ self.K2 ^ self.K3 ^ self.K4
 
-    self.info('Created D, E')
+    self.log('Created D, E')
 
     # Create message and send
     content = bitarray(0)
@@ -268,7 +269,7 @@ class EMAPTag(Tag):
       content = content
     )
 
-    self.info('Sent DE message')
+    self.log('Sent DE message')
 
     # Update keys in b4
     self.update()
@@ -300,7 +301,7 @@ class EMAPProtocol(Protocol):
     self.reader.K2 = self.tag.K2
     self.reader.K3 = self.tag.K3
     self.reader.K4 = self.tag.K4
-    self.info('Transferred secret keys through secure channel')
+    self.log('Transferred secret keys through secure channel')
     # end Secure channel
 
     self.channel.listen(self.reader)
@@ -310,7 +311,7 @@ class EMAPProtocol(Protocol):
     super(EMAPProtocol, self).run()
 
     self.reader.start()
-    self.info('End')
+    self.log('End')
 
   def verify(self) -> bool:
     if self.reader.ID != self.tag.ID:
@@ -345,5 +346,5 @@ class EMAPProtocol(Protocol):
       self.error('n2 verification mismatch')
       return False
 
-    self.info('Verification successful')
+    self.error('Verification successful')
     return True

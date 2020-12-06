@@ -6,26 +6,26 @@ from util.logger import LogLevel
 
 
 class ProtocolKind(Enum):
-  emap = 0
+  EMAP = 0
 
   @staticmethod
-  def names() -> str:
-    return ['emap']
+  def all():
+    return list(map(lambda element: element.name, ProtocolKind))
 
   @staticmethod
-  def names_description() -> str:
-    return f'{{{", ".join(ProtocolKind.names())}}}'
+  def help_list() -> str:
+    return f'{{{", ".join(ProtocolKind.all())}}}'
 
 class AttackKind(Enum):
-  linear = 0
+  LINEAR = 0
 
   @staticmethod
-  def names() -> str:
-    return ['linear']
+  def all():
+    return list(map(lambda element: element.name, AttackKind))
 
   @staticmethod
-  def names_description() -> str:
-    return f'{{{", ".join(AttackKind.names())}}}'
+  def help_list() -> str:
+    return f'{{{", ".join(AttackKind.all())}}}'
 
 def get_path(path: str) -> str:
   if os.path.isdir(path):
@@ -47,17 +47,17 @@ def parse_args():
 
   # Protocol to run
   parser.add_argument('protocol',
-    type    = str,
-    choices = ProtocolKind.names(),
-    help    = f'One of {ProtocolKind.names_description()}',
+    type    = str.upper,
+    choices = ProtocolKind.all(),
+    help    = f'One of {ProtocolKind.help_list()}',
     metavar = 'protocol'
   )
 
   # Attack to run
   parser.add_argument('-a', '--attack',
-    type     = str,
-    choices  = AttackKind.names(),
-    help     = f'One of {AttackKind.names_description()}',
+    type     = str.upper,
+    choices  = AttackKind.all(),
+    help     = f'One of {AttackKind.help_list()}',
     metavar  = 'attack',
     required = False
   )
@@ -72,10 +72,10 @@ def parse_args():
 
   # Log level
   parser.add_argument('-l', '--loglevel',
-    type     = str,
-    choices  = LogLevel.names(),
-    default  = 'INFO',
-    help     = f'One of {LogLevel.names_description()}. Default = INFO',
+    type     = str.upper,
+    choices  = LogLevel.all(),
+    default  = 'ALL',
+    help     = f'One of {LogLevel.help_list()}. Default = ALL',
     metavar  = 'log_level',
     required = False
   )

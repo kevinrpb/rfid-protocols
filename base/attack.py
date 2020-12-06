@@ -1,5 +1,5 @@
 from base.protocol import Protocol
-from util.logger import Logger
+from util.logger import Logger, LogLevel
 
 class Attack(Logger):
 
@@ -7,8 +7,8 @@ class Attack(Logger):
     self.id = f'{id}->{protocol.id}'
     self.protocol = protocol
 
-    Logger.__init__(self, 'Attack', self.id)
+    Logger.__init__(self, LogLevel.ATTACK, 'Attack', self.id)
 
 
   def run(self):
-    self.info('Started')
+    self.log('Started')
