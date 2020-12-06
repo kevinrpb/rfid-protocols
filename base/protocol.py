@@ -16,5 +16,5 @@ class Protocol(Logger):
   def run(self):
     self.info('Started')
 
-  def verify(self):
+  def verify(self) -> bool:
     pass

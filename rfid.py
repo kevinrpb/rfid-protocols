@@ -1,11 +1,37 @@
 #!/usr/bin/env python3
-
+from attacks.linear import LinearAttack
 from protocols.emap import EMAPProtocol
+from util.logger import Logger, LogLevel
+from util.parse import AttackKind, ProtocolKind, parse_args
+
+_PROTOCOLS = {
+  ProtocolKind.emap: EMAPProtocol
+}
+
+_ATTACKS = {
+  AttackKind.linear: LinearAttack
+}
 
 def main():
-  protocol = EMAPProtocol()
-  protocol.run()
-  protocol.verify()
+  args = parse_args()
+  print(args) # TODO: Remove
+
+  # Set logging level
+  Logger.level = LogLevel[args.loglevel]
+
+  # Create protocol
+  protocol = _PROTOCOLS[ProtocolKind[args.protocol]]()
+
+  # Create attack if appropriate
+  attack = None
+  if args.attack is not None:
+    attack = _ATTACKS[AttackKind[args.attack]](protocol = protocol)
+
+  # Execute according
+  if attack is not None:
+    attack.run()
+  else:
+    protocol.run()
 
 if __name__ == '__main__':
   main()

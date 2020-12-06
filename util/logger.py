@@ -1,10 +1,20 @@
 from enum import IntEnum
 
+__SPACE__ = 25
+
 class LogLevel(IntEnum):
   NONE    = 0
   ERROR   = 1
   WARNING = 2
   INFO    = 3
+
+  @staticmethod
+  def names() -> str:
+    return ['NONE', 'ERROR', 'WARNING', 'INFO']
+
+  @staticmethod
+  def names_description() -> str:
+    return f'{{{", ".join(LogLevel.names())}}}'
 
 class Logger(object):
   n = 1
@@ -16,7 +26,7 @@ class Logger(object):
 
   def _log(self, message: str):
     l = len(self.prefix + self.id)
-    space = ' ' * (20 - l)
+    space = ' ' * (__SPACE__ - l)
 
     print(f'{Logger.n:3d} [{self.prefix}{space}{self.id}] {message}')
 
