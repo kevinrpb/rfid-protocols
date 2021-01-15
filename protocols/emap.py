@@ -346,5 +346,5 @@ class EMAPProtocol(Protocol):
       self.error('n2 verification mismatch')
       return False
 
-    self.error('Verification successful')
+    self.success('Verification successful')
     return True

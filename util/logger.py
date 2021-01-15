@@ -41,7 +41,7 @@ class Logger(object):
     self.prefix = prefix
     self.id = id
 
-  def log(self, message: str, modifiers = [LogModifier.YELLOW]):
+  def log(self, message: str, modifiers = []):
     if (self.level & Logger._level) != self.level:
       return
 
@@ -51,9 +51,15 @@ class Logger(object):
     mod = ''.join([mod.value for mod in modifiers])
     end = LogModifier.END.value * len(modifiers)
 
-    print(f'{Logger.n:3d} [{self.prefix}{space}{self.id}] {mod}{message}{end}')
+    print(f'{Logger.n:4d} [{self.prefix}{space}{self.id}] {mod}{message}{end}')
 
     Logger.n = Logger.n + 1
+
+  def warn(self, message: str):
+    self.log(message, modifiers = [LogModifier.YELLOW])
+
+  def success(self, message: str):
+    self.log(message, modifiers = [LogModifier.GREEN])
 
   def error(self, message: str, exception: Exception = None):
     self.log(message, modifiers = [LogModifier.RED, LogModifier.BOLD])

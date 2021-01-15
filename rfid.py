@@ -29,7 +29,10 @@ def main():
 
   # Execute according
   if attack is not None:
-    attack.run()
+    results = attack.run()
+
+    # TODO: Do something with attack results (save to csv)
+    print(results.head())
   else:
     protocol.run()
     protocol.verify()
