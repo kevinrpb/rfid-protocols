@@ -80,4 +80,13 @@ def parse_args():
     required = False
   )
 
+  # Log level
+  parser.add_argument('-i', '--iterations',
+    type     = int,
+    default  = 1,
+    help     = 'Number of iterations to be run when doing an attack',
+    metavar  = 'iterations',
+    required = False
+  )
+
   return parser.parse_args()

@@ -176,7 +176,7 @@ class LinearAttack(Attack):
     self.log('Summarizing results')
 
     # Extract keys (descriptions)
-    keys = [[item['description'] for item in _list] for _list in results_lists]
+    keys = [set([item['description'] for item in _list]) for _list in results_lists]
     keys = functools.reduce((lambda history, new: history & new), keys)
 
     # Now for each of these keys
