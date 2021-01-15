@@ -12,10 +12,11 @@ from pandas import DataFrame
 
 class LinearAttack(Attack):
 
-  def __init__(self, protocol: Protocol, N = 1):
+  def __init__(self, protocol: Protocol, iterations = 1, max_combinations = 2):
     Attack.__init__(self, 'linear', protocol)
 
-    self.N = N
+    self.iterations = iterations
+    self.max_combinations = max_combinations
 
   def run_analysis(self, parts: dict, target: bitarray, iteration: int, max_combinations: int) -> list:
     def evaluate(value: bitarray, target: bitarray) -> int:
@@ -213,8 +214,8 @@ class LinearAttack(Attack):
     results = []
 
     # Run N times
-    for i in range(1, self.N + 1):
-      results.append(self.run_attack(i))
+    for i in range(1, self.iterations + 1):
+      results.append(self.run_attack(i, self.max_combinations))
 
     # Get summary
     return self.summarize_results(results)

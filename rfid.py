@@ -25,7 +25,7 @@ def main():
   # Create attack if appropriate
   attack = None
   if args.attack is not None:
-    attack = _ATTACKS[AttackKind[args.attack]](protocol = protocol, N = args.iterations)
+    attack = _ATTACKS[AttackKind[args.attack]](protocol, args.iterations, args.combinations)
 
   # Execute according
   if attack is not None:
