@@ -65,3 +65,32 @@ class Logger(object):
     self.log(message, modifiers = [LogModifier.RED, LogModifier.BOLD])
     if exception is not None:
       raise exception
+
+class ForceLogger(Logger):
+
+  def __init__(self, prefix: str, id: str):
+    Logger.__init__(self, LogLevel.ALL, prefix, id)
+
+  def log(self, message: str, modifiers = []):
+    prev_level = Logger._level
+    Logger._level = LogLevel.ALL if prev_level != LogLevel.NONE else prev_level
+    super().log(message, modifiers)
+    Logger._level = prev_level
+
+  def warn(self, message: str):
+    prev_level = Logger._level
+    Logger._level = LogLevel.ALL if prev_level != LogLevel.NONE else prev_level
+    super().warn(message)
+    Logger._level = prev_level
+
+  def success(self, message: str):
+    prev_level = Logger._level
+    Logger._level = LogLevel.ALL if prev_level != LogLevel.NONE else prev_level
+    super().success(message)
+    Logger._level = prev_level
+
+  def error(self, message: str, exception: Exception = None):
+    prev_level = Logger._level
+    Logger._level = LogLevel.ALL if prev_level != LogLevel.NONE else prev_level
+    super().error(message, exception)
+    Logger._level = prev_level
