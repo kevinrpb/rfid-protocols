@@ -116,7 +116,12 @@ class LinearAttack(Attack):
     self.warn(f'(iter {iteration:4d}) Intercepted {len(messages)} messages')
 
     # Check that we have a target
-    target = self.protocol.tag.ID
+    target = None
+
+    if hasattr(self.protocol.tag, 'ID'): # EMAP
+      target = self.protocol.tag.ID
+    elif hasattr(self.protocol.tag, 'PID'): # DP
+      target = self.protocol.tag.PID
 
     if target is None:
       self.error(f'(iter {iteration:4d}) Tag doesn\'t have an ID!')

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from attacks.linear import LinearAttack
 from protocols.emap import EMAPProtocol
+from protocols.dp import DPProtocol
 from util.logger import Logger, LogLevel
 from util.parse import AttackKind, ProtocolKind, parse_args
 
 _PROTOCOLS = {
-  ProtocolKind.EMAP: EMAPProtocol
+  ProtocolKind.EMAP: EMAPProtocol,
+  ProtocolKind.DP: DPProtocol
 }
 
 _ATTACKS = {

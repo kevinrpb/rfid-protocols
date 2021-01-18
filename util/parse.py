@@ -7,6 +7,7 @@ from util.logger import LogLevel
 
 class ProtocolKind(Enum):
   EMAP = 0
+  DP = 1
 
   @staticmethod
   def all():

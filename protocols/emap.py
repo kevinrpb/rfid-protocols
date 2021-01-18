@@ -120,6 +120,7 @@ class EMAPReader(Reader):
     A =  self.IDS ^ self.K1  ^ self.n1
     B = (self.IDS | self.K2) ^ self.n1
     C =  self.IDS ^ self.K3  ^ self.n2
+    
     self.log('Created A, B, C')
 
     # Create and send message
