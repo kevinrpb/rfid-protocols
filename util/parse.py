@@ -1,4 +1,5 @@
 import argparse
+import errno
 import os
 from enum import Enum
 
@@ -30,12 +31,12 @@ class AttackKind(Enum):
 
 def get_path(path: str) -> str:
   if os.path.isdir(path):
-    return os.path.abspath(path)
+    raise argparse.ArgumentTypeError(f'{path} is not a valid file')
   elif os.path.isfile(path):
-    raise argparse.ArgumentTypeError(f'{path} is not a valid directory')
+    return os.path.abspath(path)
   else:
     try:
-      os.makedirs(path)
+      os.makedirs(os.path.dirname(path))
       return os.path.abspath(path)
     except OSError as e:
       if e.errno != errno.EEXIST:
@@ -75,7 +76,7 @@ def parse_args():
   # Output dir
   parser.add_argument('-o', '--output',
     type     = get_path,
-    help     = 'Output directory for attack results',
+    help     = 'Output file for attack results',
     metavar  = 'output',
     required = False
   )

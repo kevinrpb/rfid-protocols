@@ -40,8 +40,12 @@ def main():
     logger.log('Running Attack')
     results = attack.run(target_name)
 
-    # TODO: Do something with attack results (save to csv)
     results = results.sort_values(by = ['mean', 'stdev', 'combination'], ascending = False)
+
+    if args.output is not None:
+      out_filename = args.output
+      results.to_csv(out_filename, index=False)
+      logger.warn(f'Saved results to {out_filename}')
 
   else:
     logger.log('Running Protocol')
