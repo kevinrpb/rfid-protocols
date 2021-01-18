@@ -70,7 +70,7 @@ class DPReader(Reader):
 
     # Then, create A, B, C
     A = (self.PID2 & self.K1 & self.K2) ^ self.n1
-    B = (self.PID2 & self.K2 & self.K1) ^ self.n2
+    B = (~self.PID2 & self.K2 & self.K1) ^ self.n2
     D = (self.K1 & self.n2) ^ (self.K2 & self.n1)
 
     self.log('Created A, B, D')
@@ -191,7 +191,7 @@ class DPTag(Tag):
 
     # Get n1, n2
     n1 = (self.PID2 & self.K1 & self.K2) ^ A
-    n2 = (self.PID2 & self.K2 & self.K1) ^ B
+    n2 = (~self.PID2 & self.K2 & self.K1) ^ B
 
     _D = (self.K1 & n2) ^ (self.K2 & n1)
 

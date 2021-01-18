@@ -16,7 +16,6 @@ _ATTACKS = {
 
 def main():
   args = parse_args()
-  print(args) # TODO: Remove
 
   # Set logging level
   Logger._level = LogLevel[args.loglevel]
