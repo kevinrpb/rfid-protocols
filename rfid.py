@@ -28,12 +28,18 @@ def main():
   attack = None
   if args.attack is not None:
     attack = _ATTACKS[AttackKind[args.attack]](protocol, args.iterations, args.combinations)
+  target_name = args.target
 
   # Execute according
   if attack is not None:
-    results = attack.run()
+    if target_name is None:
+      print('Attack was specified without a target. Please, indicate the target (ID, PID, ...)')
+      exit(1)
+
+    results = attack.run(target_name)
 
     # TODO: Do something with attack results (save to csv)
+    results = results.sort_values(by = ['mean', 'stdev', 'combination'], ascending = False)
     print(results.head())
   else:
     protocol.run()

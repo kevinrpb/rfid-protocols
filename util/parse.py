@@ -63,6 +63,15 @@ def parse_args():
     required = False
   )
 
+  # Target of the attack
+  parser.add_argument('-t', '--target',
+    type     = str,
+    help     = 'Target attribute in Tag to be attacked',
+    metavar  = 'target',
+    default  = None,
+    required = False
+  )
+
   # Output dir
   parser.add_argument('-o', '--output',
     type     = get_path,

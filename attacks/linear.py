@@ -96,7 +96,7 @@ class LinearAttack(Attack):
     self.warn(f'(iter {iteration:4d}) Evaluated {len(results)} combinations')
     return results
 
-  def run_attack(self, iteration: int = 1, max_combinations: int = 2):
+  def run_attack(self, target_name: str, iteration: int = 1, max_combinations: int = 2):
     # Empty messages
     self.messages = []
 
@@ -108,25 +108,25 @@ class LinearAttack(Attack):
     self.log(f'(iter {iteration:4d}) Attached to channel')
     self.protocol.channel.listen(self)
 
+    # Check that we have a target before running protocol
+    target = None
+
+    if hasattr(self.protocol.tag, target_name):
+      target = getattr(self.protocol.tag, target_name)
+    else:
+      self.error(f'Tag doesn\'t have attribute {target_name}')
+
+    if target is None:
+      self.error(f'(iter {iteration:4d}) Tag doesn\'t have an ID!')
+    else:
+      self.log(f'(iter {iteration:4d}) Target ID has length {target.length()}')
+
     # Let protocol run
     self.protocol.run()
 
     # Get messages
     messages = self.messages
     self.warn(f'(iter {iteration:4d}) Intercepted {len(messages)} messages')
-
-    # Check that we have a target
-    target = None
-
-    if hasattr(self.protocol.tag, 'ID'): # EMAP
-      target = self.protocol.tag.ID
-    elif hasattr(self.protocol.tag, 'PID'): # DP
-      target = self.protocol.tag.PID
-
-    if target is None:
-      self.error(f'(iter {iteration:4d}) Tag doesn\'t have an ID!')
-    else:
-      self.log(f'(iter {iteration:4d}) Target ID has length {target.length()}')
 
     # Naive infer length
     L = None
@@ -213,14 +213,14 @@ class LinearAttack(Attack):
 
     return df
 
-  def run(self) -> DataFrame:
-    super(LinearAttack, self).run()
+  def run(self, target_name: str) -> DataFrame:
+    super(LinearAttack, self).run(target_name)
 
     results = []
 
     # Run N times
     for i in range(1, self.iterations + 1):
-      results.append(self.run_attack(i, self.max_combinations))
+      results.append(self.run_attack(target_name, i, self.max_combinations))
 
     # Get summary
     return self.summarize_results(results)

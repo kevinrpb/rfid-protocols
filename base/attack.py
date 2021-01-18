@@ -14,5 +14,5 @@ class Attack(Listener, Logger):
 
     Logger.__init__(self, LogLevel.ATTACK, 'Attack', self.id)
 
-  def run(self):
+  def run(self, target: str):
     self.log('Started')
