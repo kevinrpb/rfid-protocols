@@ -35,12 +35,17 @@ def get_path(path: str) -> str:
   elif os.path.isfile(path):
     return os.path.abspath(path)
   else:
-    try:
-      os.makedirs(os.path.dirname(path))
-      return os.path.abspath(path)
-    except OSError as e:
-      if e.errno != errno.EEXIST:
-        raise
+    dirname = os.path.dirname(path)
+
+    if not os.path.exists(dirname):
+      try:
+        os.makedirs(dirname)
+      except OSError as e:
+        if e.errno != errno.EEXIST:
+          raise
+
+    return os.path.abspath(path)
+
 
 def parse_args():
   parser = argparse.ArgumentParser(
